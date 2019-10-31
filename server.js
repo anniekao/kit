@@ -4,11 +4,21 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-
 const { Pool } = require("pg");
-const dbParams = require("./lib/db.js");
+const PORT = process.env.PORT || 5000;
+const cors = require("cors");
 
-// const db = new Pool(dbParams);
+// const cookieSession = require("cookie-session");
+
+app.use(morgan("dev"));
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(
+//   cookieSession({
+//     name: "session",
+//     keys: [process.env.KEY]
+//   })
+// );
 
 const db = new Pool({
   user: process.env.PGUSER,
@@ -19,15 +29,15 @@ const db = new Pool({
   ssl: true
 });
 
-const PORT = process.env.PORT || 5000;
 db.connect((err, client) => {
   if (!err) {
     console.log("successfully connect to database");
   }
 });
 
-app.use(morgan("dev"));
-app.use(bodyParser.urlencoded({ extended: true }));
+// routing
+const signupRoutes = require("./routes/signupRoutes");
+app.use("/signup", signupRoutes(db));
 
 app.listen(PORT, () => {
   console.log(`Successfully connected to ${PORT}`);

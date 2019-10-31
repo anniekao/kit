@@ -8,14 +8,15 @@ drop table if exists contact cascade;
 create table users
 (
   id serial primary key not null,
-  first_name varchar (255) not null,
-  last_name varchar(255) not null,
+  first_name varchar (255),
+  last_name varchar(255),
   email varchar(255) not null,
-  phone varchar(255) not null,
-  occupation varchar(255) not null,
+  password varchar(255) not null,
+  phone varchar(255),
+  occupation varchar(255),
   bio text,
-  qr_code varchar(255) not null,
-  company varchar(255) not null
+  qr_code varchar(255),
+  company varchar(255)
 );
 
 create table social_media
