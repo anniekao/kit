@@ -9,9 +9,6 @@ module.exports = db => {
     let email = req.body.email;
     let password = req.body.password;
 
-    email = "helo";
-    password = "jello";
-
     db.query(`select * from users where email = $1`, [email])
       .then(resp => {
         if (resp.rowCount !== 0) {
@@ -26,11 +23,14 @@ module.exports = db => {
             )
               .then(user => {
                 if (user.rowCount !== 1) {
-                  throw new Error("Error occurs during creationg");
+                  res.send(403).json({
+                    auth: false,
+                    message: "Incorrect name or password"
+                  });
+                  throw new Error("Incorrect name or password");
                 }
-                console.log("im in here " + hashedPassword);
                 const token = jwt.sign(
-                  { id: user.id },
+                  { id: user.rows[0].id },
                   process.env.SECRECT_KEY,
                   { expiresIn: 86400 } //expires in 24 horurs
                 );
@@ -39,13 +39,11 @@ module.exports = db => {
                   res.cookie("jwt-token", token);
                   res.status(200).send({ auth: true, token: token });
                 }
-                console.log("user return is " + JSON.stringify(user));
               })
               .catch(err => {
                 res.status(500).send();
                 console.log("Error - " + err);
               });
-            console.log("hello");
           })
           .catch(e => {
             throw new Error("Error occurs when hashing");

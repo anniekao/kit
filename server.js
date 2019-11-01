@@ -37,7 +37,9 @@ db.connect((err, client) => {
 
 // routing
 const signupRoutes = require("./routes/signupRoutes");
+const loginRoutes = require("./routes/loginRoutes");
 app.use("/signup", signupRoutes(db));
+app.use("/login", loginRoutes(db));
 
 app.listen(PORT, () => {
   console.log(`Successfully connected to ${PORT}`);
