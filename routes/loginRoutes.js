@@ -8,17 +8,9 @@ module.exports = db => {
     const email = req.body.email;
     const password = req.body.password;
 
-    // testing
-    // const email = "helo";
-    // const password = "jello";
-
     db.query("select * from users where email = $1", [email])
       .then(user => {
         if (user.rowCount !== 1) {
-          res.send(403).json({
-            auth: false,
-            message: "Incorrect name or password"
-          });
           throw new Error("Incorrect name or password");
         }
         const hash = user.rows[0].password;
@@ -34,10 +26,11 @@ module.exports = db => {
             });
           }
         }
+        return "";
       })
-      .catch(e => {
-        res.status(500).send();
-        console.log("Error - " + e);
+      .catch(err => {
+        res.status(401).json({ message: "Incorrect name or password" });
+        return "";
       });
   });
   return router;

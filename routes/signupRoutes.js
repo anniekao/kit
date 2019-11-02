@@ -23,10 +23,6 @@ module.exports = db => {
             )
               .then(user => {
                 if (user.rowCount !== 1) {
-                  res.send(403).json({
-                    auth: false,
-                    message: "Incorrect name or password"
-                  });
                   throw new Error("Incorrect name or password");
                 }
                 const token = jwt.sign(
@@ -41,8 +37,9 @@ module.exports = db => {
                 }
               })
               .catch(err => {
-                res.status(500).send();
-                console.log("Error - " + err);
+                res.status(403).json({
+                  message: "Incorrect name or password"
+                });
               });
           })
           .catch(e => {
@@ -50,8 +47,11 @@ module.exports = db => {
           });
       })
       .catch(err => {
-        res.status(500).send();
-        console.log("Error - " + err);
+        console.log(err);
+        res.status(403).json({
+          message: "Incorrect name or password"
+        });
+        return "";
       });
   });
 
