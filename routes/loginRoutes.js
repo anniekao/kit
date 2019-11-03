@@ -8,6 +8,9 @@ module.exports = db => {
     const email = req.body.email;
     const password = req.body.password;
 
+    console.log("email" + email);
+    console.log("password" + password);
+
     db.query("select * from users where email = $1", [email])
       .then(user => {
         if (user.rowCount !== 1) {
@@ -19,7 +22,11 @@ module.exports = db => {
             expiresIn: 86400
           });
           if (token) {
-            res.cookie("jwt-token", token);
+            // res.header("Access-Control-Allow-Credentials", true);
+            res.cookie("access_token", token, {
+              maxAge: 900000
+              // httpOnly: true
+            });
             res.status(200).json({
               auth: true,
               token: token

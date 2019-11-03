@@ -32,7 +32,7 @@ module.exports = db => {
                 );
 
                 if (token) {
-                  res.cookie("jwt-token", token);
+                  res.cookie("access_token", token);
                   res.status(200).send({ auth: true, token: token });
                 }
               })
