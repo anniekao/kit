@@ -7,9 +7,8 @@ const morgan = require("morgan");
 const { Pool } = require("pg");
 const PORT = process.env.PORT || 5000;
 const cors = require("cors");
-var cookieParser = require("cookie-parser");
-
-// const cookieSession = require("cookie-session");
+const cookieParser = require("cookie-parser");
+require("./service/passport");
 
 app.use(morgan("dev"));
 app.use(
@@ -21,12 +20,6 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-// app.use(
-//   cookieSession({
-//     name: "session",
-//     keys: [process.env.KEY]
-//   })
-// );
 
 const db = new Pool({
   user: process.env.PGUSER,
@@ -46,8 +39,10 @@ db.connect((err, client) => {
 // routing
 const signupRoutes = require("./routes/signupRoutes");
 const loginRoutes = require("./routes/loginRoutes");
+const authRoutes = require("./routes/authRoutes");
 app.use("/signup", signupRoutes(db));
 app.use("/login", loginRoutes(db));
+app.use("/auth/google", authRoutes(db));
 
 app.listen(PORT, () => {
   console.log(`Successfully connected to ${PORT}`);
