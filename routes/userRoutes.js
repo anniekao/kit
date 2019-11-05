@@ -6,7 +6,7 @@ module.exports = db => {
   userRouter.get('/', async (req, res) => {
     // select all columns in users table except for password
     const users = await db.query(`
-      SELECT first_name, last_name, email, phone, occupation, bio, qr_code, company FROM users;
+      SELECT first_name, last_name, email, phone, occupation, bio, qr_code, company, id FROM users;
     `);
     res.status(200).json(users.rows)
   })
@@ -18,7 +18,7 @@ module.exports = db => {
     try {
       // select all columns in users table except for password
       const user = await db.query(`
-        SELECT first_name, last_name, email, phone, occupation, bio, qr_code, company FROM users WHERE id = $1;
+        SELECT first_name, last_name, email, phone, occupation, bio, qr_code, company, id FROM users WHERE id = $1;
       `, [req.params.id]);
 
       if (user) {
