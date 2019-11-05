@@ -41,10 +41,12 @@ const signupRoutes = require("./routes/signupRoutes");
 const loginRoutes = require("./routes/loginRoutes");
 const authRoutes = require("./routes/authRoutes");
 const eventFeedRoutes = require("./routes/eventFeedRoutes");
+const eventHistoryRoutes = require("./routes/eventHistoryRoutes");
 app.use("/signup", signupRoutes(db));
 app.use("/login", loginRoutes(db));
 app.use("/auth/google", authRoutes(db));
 app.use("/events", eventFeedRoutes());
+app.use("/users", eventHistoryRoutes(db));
 
 app.listen(PORT, () => {
   console.log(`Successfully connected to ${PORT}`);
