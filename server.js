@@ -8,7 +8,6 @@ const { Pool } = require("pg");
 const PORT = process.env.PORT || 5000;
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-require("./service/passport");
 
 app.use(morgan("dev"));
 app.use(
@@ -35,6 +34,8 @@ db.connect((err, client) => {
     console.log("successfully connect to database");
   }
 });
+
+require("./service/passport")(db);
 
 // routing
 const signupRoutes = require("./routes/signupRoutes");
