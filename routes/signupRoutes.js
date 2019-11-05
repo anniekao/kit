@@ -27,13 +27,21 @@ module.exports = db => {
                 }
                 const token = jwt.sign(
                   { id: user.rows[0].id },
-                  process.env.SECRECT_KEY,
+                  process.env.SECRET_KEY,
                   { expiresIn: 86400 } //expires in 24 horurs
                 );
 
                 if (token) {
                   res.cookie("access_token", token);
-                  res.status(200).send({ auth: true, token: token });
+                  res.status(200)
+                    .send({ 
+                      auth: true, 
+                      token: token,
+                      data: {
+                        id: user.rows[0].id,
+                        name: user.rows[0].first_name + " " + user.rows[0].last_name
+                      } 
+                    });
                 }
               })
               .catch(err => {

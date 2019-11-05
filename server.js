@@ -8,6 +8,7 @@ const { Pool } = require("pg");
 const PORT = process.env.PORT || 5000;
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const methodOverride = require("method-override");
 
 app.use(morgan("dev"));
 app.use(
@@ -19,6 +20,7 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(methodOverride("_method"));
 
 const db = new Pool({
   user: process.env.PGUSER,
@@ -42,10 +44,12 @@ const signupRoutes = require("./routes/signupRoutes");
 const loginRoutes = require("./routes/loginRoutes");
 const authRoutes = require("./routes/authRoutes");
 const eventFeedRoutes = require("./routes/eventFeedRoutes");
+const userRoutes = require("./routes/userRoutes");
 app.use("/signup", signupRoutes(db));
 app.use("/login", loginRoutes(db));
 app.use("/auth/google", authRoutes(db));
 app.use("/events", eventFeedRoutes());
+app.use("/users", userRoutes(db));
 
 app.listen(PORT, () => {
   console.log(`Successfully connected to ${PORT}`);

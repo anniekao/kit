@@ -10,15 +10,16 @@ module.exports = db => {
 
     console.log("email" + email);
     console.log("password" + password);
+    console.log("LOGGING IN!!!!")
 
     db.query("select * from users where email = $1", [email])
       .then(user => {
         if (user.rowCount !== 1) {
-          throw new Error("Incorrect name or password");
+          throw new Error("Incorrect email or password");
         }
         const hash = user.rows[0].password;
         if (bcrypt.compareSync(password, hash)) {
-          const token = jwt.sign({ id: user.id }, process.env.SECRECT_KEY, {
+          const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
             expiresIn: 86400
           });
           if (token) {
@@ -29,15 +30,21 @@ module.exports = db => {
             });
             res.status(200).json({
               auth: true,
+              data: { 
+                id: user.rows[0].id,
+                name: user.rows[0].first_name + " " + user.rows[0].last_name
+              },
               token: token
             });
           }
+        } else {
+          throw newError("Wrong password")
         }
-        return "";
+        // return "";
       })
       .catch(err => {
         res.status(401).json({ message: "Incorrect name or password" });
-        return "";
+        // return "";
       });
   });
   return router;
