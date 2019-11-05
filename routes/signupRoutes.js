@@ -27,7 +27,7 @@ module.exports = db => {
                 }
                 const token = jwt.sign(
                   { id: user.rows[0].id },
-                  process.env.SECRECT_KEY,
+                  process.env.SECRET_KEY,
                   { expiresIn: 86400 } //expires in 24 horurs
                 );
 

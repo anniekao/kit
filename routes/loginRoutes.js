@@ -10,6 +10,7 @@ module.exports = db => {
 
     console.log("email" + email);
     console.log("password" + password);
+    console.log("LOGGING IN!!!!")
 
     db.query("select * from users where email = $1", [email])
       .then(user => {
@@ -18,7 +19,7 @@ module.exports = db => {
         }
         const hash = user.rows[0].password;
         if (bcrypt.compareSync(password, hash)) {
-          const token = jwt.sign({ id: user.id }, process.env.SECRECT_KEY, {
+          const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
             expiresIn: 86400
           });
           if (token) {
