@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 module.exports = db => {
-  router.get('/:userId/event/:eventId', async (req, res) => {
+  router.get('/:userId/events/:eventId', async (req, res) => {
     try {
       const eventDetails = await db.query(
         `
