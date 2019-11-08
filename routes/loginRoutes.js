@@ -10,18 +10,23 @@ module.exports = db => {
 
     console.log("email" + email);
     console.log("password" + password);
-    console.log("LOGGING IN!!!!")
+    console.log("LOGGING IN!!!!");
 
     db.query("select * from users where email = $1", [email])
       .then(user => {
         if (user.rowCount !== 1) {
           throw new Error("Incorrect email or password");
         }
+        console.log(JSON.stringify(user));
         const hash = user.rows[0].password;
         if (bcrypt.compareSync(password, hash)) {
-          const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
-            expiresIn: 86400
-          });
+          const token = jwt.sign(
+            { id: user.rows[0].id },
+            process.env.SECRET_KEY,
+            {
+              expiresIn: 86400
+            }
+          );
           if (token) {
             // res.header("Access-Control-Allow-Credentials", true);
             res.cookie("access_token", token, {
@@ -30,7 +35,7 @@ module.exports = db => {
             });
             res.status(200).json({
               auth: true,
-              data: { 
+              data: {
                 id: user.rows[0].id,
                 name: user.rows[0].first_name + " " + user.rows[0].last_name
               },
@@ -38,7 +43,7 @@ module.exports = db => {
             });
           }
         } else {
-          throw newError("Wrong password")
+          throw new Error("Wrong password");
         }
         // return "";
       })

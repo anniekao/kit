@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 module.exports = () => {
   router.get(
     "/",
-    passport.authenticate("google", { scope: ["profile", "email", "phone"] })
+    passport.authenticate("google", { scope: ["profile", "email"] })
   );
 
   router.get("/callback", function(req, res) {
@@ -15,7 +15,7 @@ module.exports = () => {
         res.redirect("http://localhost:3000/login");
       }
       // we are essentially encryting client auth id as our jwt, i duno if its the best solution
-      const token = jwt.sign({ id: profile.id }, process.env.SECRECT_KEY, {
+      const token = jwt.sign({ id: profile.id }, process.env.SECRET_KEY, {
         expiresIn: 86400
       });
       res.cookie("access_token", token);
