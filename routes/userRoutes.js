@@ -36,15 +36,12 @@ module.exports = db => {
   // PUT /users/:id
   userRouter.put("/:id", async (req, res) => {
     // create arrays with all elements except for id key and value
-    const fields = Object.keys(req.body).filter(field => field !== "id");
+    const fields = Object.keys(req.body);
     const queryParams = Object.values(req.body);
-    // removes id value
-    queryParams.pop();
 
     // count to keep track of $1 placeholders
     let count = 1;
     let queryStr = `UPDATE users SET `;
-
     // append e.g. first_name = $1 to query string
     // also append comma to every element except last
     for (let i = 0; i < fields.length; i++) {
@@ -56,8 +53,7 @@ module.exports = db => {
       count++;
     }
 
-    queryStr += `WHERE id = ${req.body.id} RETURNING first_name, last_name, email, phone, occupation, bio, qr_code, company;`;
-
+    queryStr += `WHERE id = ${req.params.id} RETURNING first_name, last_name, email, phone, occupation, bio, qr_code, company;`;
     try {
       const updatedUser = await db.query(queryStr, queryParams);
       if (updatedUser) {
