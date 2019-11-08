@@ -1,5 +1,6 @@
 const userRouter = require("express").Router();
 
+// const moment = require('moment')
 module.exports = db => {
   // GET /users
   userRouter.get("/", async (req, res) => {
@@ -85,18 +86,12 @@ module.exports = db => {
       const tempDate = new Date(postGresDate);
       let tempTime = ("" + time).split(":");
 
-      console.log(tempTime);
-      console.log(Number(tempTime[0]));
-      console.log(Number(tempTime[1]));
-
       return new Date(
         tempDate.getFullYear(),
         tempDate.getMonth(),
         tempDate.getDate(),
         Number(tempTime[0]),
-        Number(tempTime[1]),
-        0,
-        0
+        Number(tempTime[1])
       );
     };
 
@@ -116,8 +111,12 @@ module.exports = db => {
         let obj = {};
         obj.id = eventObj.id;
         obj.title = eventObj.name;
-        obj.start = convertDate(eventObj.date, eventObj.start_time);
-        obj.end = convertDate(eventObj.date, eventObj.end_time);
+        // obj.start = convertDate(eventObj.date, eventObj.start_time);
+        obj.start = convertDate(eventObj.date, eventObj.start_time).toString();
+        obj.end = convertDate(eventObj.date, eventObj.end_time).toString();
+
+        console.log(obj);
+
         return obj;
       });
 
