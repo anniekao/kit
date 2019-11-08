@@ -44,11 +44,15 @@ const signupRoutes = require("./routes/signupRoutes");
 const loginRoutes = require("./routes/loginRoutes");
 const authRoutes = require("./routes/authRoutes");
 const eventFeedRoutes = require("./routes/eventFeedRoutes");
+const eventHistoryRoutes = require("./routes/eventHistoryRoutes");
+const eventContactsRoutes = require("./routes/eventContactsRoutes");
 const userRoutes = require("./routes/userRoutes");
 app.use("/signup", signupRoutes(db));
 app.use("/login", loginRoutes(db));
 app.use("/auth/google", authRoutes(db));
 app.use("/events", eventFeedRoutes());
+app.use("/users", eventHistoryRoutes(db));
+app.use("/users", eventContactsRoutes(db));
 app.use("/users", userRoutes(db));
 
 app.listen(PORT, () => {
