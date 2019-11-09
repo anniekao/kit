@@ -1,4 +1,5 @@
 const userRouter = require("express").Router();
+const moment = require("moment");
 
 // const moment = require('moment')
 module.exports = db => {
@@ -123,6 +124,83 @@ module.exports = db => {
       res.status(200).send(result);
     } catch (exception) {
       console.error(exception);
+      res.status(404).json({ message: exception });
+    }
+  });
+
+  // POST users/:id/contact
+  userRouter.post("/:userId/contacts/:contactId", async (req, res) => {
+    const contactId = req.params.contactId;
+    const userId = req.params.userId;
+    const calDistance = (lat1, lon1, lat2, lon2) => {
+      const toRad = function(num) {
+        return num * (Math.PI / 180);
+      };
+      var R = 6371e3; // metres
+      var φ1 = toRad(lat1);
+      var φ2 = toRad(lat2);
+      var Δφ = toRad(lat2 - lat1);
+      var Δλ = toRad(lon2 - lon1);
+      var a =
+        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      var d = R * c;
+      return d;
+    };
+
+    const { lat, long } = req.body;
+
+    try {
+      let events = await db.query(
+        `select * from network_event ne 
+        join user_event ue 
+        on ne.id = ue.network_event_id 
+        where ue.user_id = $1
+        and ne.date = $2
+        `,
+        [userId, moment(new Date()).format("YYYY-MM-DD")]
+      );
+
+      if (events.rowCount === 0) {
+        throw new Error("No event found for the users");
+      }
+
+      let closestEvents = events.rows.map(event => {
+        console.log(event);
+        const tempEvent = {
+          ...event,
+          distance: calDistance(lat, long, event.lat, event.long)
+        };
+        return tempEvent;
+      });
+
+      closestEvents.sort((x, y) => x.distance - y.distance);
+
+      console.log(closestEvents);
+
+      let found = await db.query(
+        `select * from contact where user_event_id = $1 and user_id = $2`,
+        [closestEvents[0].id, contactId]
+      );
+
+      if (found.rowCount >= 1) {
+        throw new Error(`You have already added this user`);
+      }
+
+      let contact = await db.query(
+        `insert into contact (user_event_id, user_id) values ($1, $2) returning *`,
+        [closestEvents[0].id, contactId]
+      );
+
+      if (contact.rowCount !== 1) {
+        throw new Error(`Create Contact failed`);
+      }
+
+      res.status(302).json(contact.rows[0]);
+    } catch (exception) {
+      console.log(exception);
       res.status(404).json({ message: exception });
     }
   });

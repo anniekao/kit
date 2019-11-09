@@ -38,6 +38,8 @@ create table network_event
   id serial primary key not null,
   name varchar (255) not null,
   location varchar (255) not null,
+  lat float not null,
+  long float not null,
   date date not null,
   start_time time not null,
   end_time time not null
@@ -55,6 +57,7 @@ create table contact
   id serial primary key not null,
   user_id integer references users(id) on delete cascade,
   user_event_id integer references user_event(id) on delete cascade
+  UNIQUE (user_id, user_event_id)
 );
 
 
