@@ -209,7 +209,8 @@ module.exports = db => {
         throw new Error(`Create Contact failed`);
       }
 
-      res.status(302).json(contact.rows[0]);
+      console.log(contact.rows[0])
+      res.status(200).json(contact.rows[0]);
     } catch (exception) {
       console.error(exception);
       res.status(404).json({ message: exception });
