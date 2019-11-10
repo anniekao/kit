@@ -9,14 +9,27 @@ const PORT = process.env.PORT || 5000;
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const methodOverride = require("method-override");
+const cookieSession = require("cookie-session");
 
-app.use(morgan("dev"));
 app.use(
   cors({
     credentials: true,
     origin: "http://localhost:3000"
   })
 );
+
+app.use(
+  cookieSession({
+    path: "/",
+    name: "session",
+    keys: [process.env.SECRET_KEY],
+    secure: false,
+    resave: false,
+    maxAge: 900000
+  })
+);
+app.use(morgan("dev"));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -40,9 +53,9 @@ db.connect((err, client) => {
 require("./service/passport")(db);
 
 // routing
+const authRoutes = require("./routes/authRoutes");
 const signupRoutes = require("./routes/signupRoutes");
 const loginRoutes = require("./routes/loginRoutes");
-const authRoutes = require("./routes/authRoutes");
 const eventFeedRoutes = require("./routes/eventFeedRoutes");
 const eventHistoryRoutes = require("./routes/eventHistoryRoutes");
 const eventContactsRoutes = require("./routes/eventContactsRoutes");

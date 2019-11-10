@@ -8,10 +8,6 @@ module.exports = db => {
     const email = req.body.email;
     const password = req.body.password;
 
-    console.log("email" + email);
-    console.log("password" + password);
-    console.log("LOGGING IN!!!!");
-
     db.query("select * from users where email = $1", [email])
       .then(user => {
         if (user.rowCount !== 1) {

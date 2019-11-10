@@ -11,8 +11,20 @@ module.exports = db => {
     `);
     res.status(200).json(users.rows);
   });
-
   // POST /users : Is this necessary because user is already created in sign up route ?
+
+  userRouter.get("/current", (req, res) => {
+    let inComingToken = null;
+    if (req.headers.authorization) {
+      inComingToken = req.headers.authorization.split(" ")[1];
+    }
+    if (inComingToken === req.session.currentUser.token) {
+      console.log("match");
+      res.status(200).json({ ...req.session.currentUser.user, password: null });
+    } else {
+      res.status(403).json({ message: "403 Forbidden Error" });
+    }
+  });
 
   // GET /users/:id
   userRouter.get("/:id", async (req, res) => {
@@ -127,7 +139,6 @@ module.exports = db => {
       res.status(404).json({ message: exception });
     }
   });
-
   // POST users/:id/contact
   userRouter.post("/:userId/contacts/:contactId", async (req, res) => {
     const contactId = req.params.contactId;
@@ -136,17 +147,17 @@ module.exports = db => {
       const toRad = function(num) {
         return num * (Math.PI / 180);
       };
-      var R = 6371e3; // metres
-      var φ1 = toRad(lat1);
-      var φ2 = toRad(lat2);
-      var Δφ = toRad(lat2 - lat1);
-      var Δλ = toRad(lon2 - lon1);
-      var a =
+      const R = 6371e3; // metres
+      const φ1 = toRad(lat1);
+      const φ2 = toRad(lat2);
+      const Δφ = toRad(lat2 - lat1);
+      const Δλ = toRad(lon2 - lon1);
+      const a =
         Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
         Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-      var d = R * c;
+      const d = R * c;
       return d;
     };
 
@@ -200,7 +211,7 @@ module.exports = db => {
 
       res.status(302).json(contact.rows[0]);
     } catch (exception) {
-      console.log(exception);
+      console.error(exception);
       res.status(404).json({ message: exception });
     }
   });
