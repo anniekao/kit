@@ -10,6 +10,16 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const methodOverride = require("method-override");
 
+const middleware = require("./middleware/index");
+
+const signupRoutes = require("./routes/signupRoutes");
+const loginRoutes = require("./routes/loginRoutes");
+const authRoutes = require("./routes/authRoutes");
+const eventFeedRoutes = require("./routes/eventFeedRoutes");
+const eventHistoryRoutes = require("./routes/eventHistoryRoutes");
+const eventContactsRoutes = require("./routes/eventContactsRoutes");
+const userRoutes = require("./routes/userRoutes");
+
 app.use(morgan("dev"));
 app.use(
   cors({
@@ -40,13 +50,6 @@ db.connect((err, client) => {
 require("./service/passport")(db);
 
 // routing
-const signupRoutes = require("./routes/signupRoutes");
-const loginRoutes = require("./routes/loginRoutes");
-const authRoutes = require("./routes/authRoutes");
-const eventFeedRoutes = require("./routes/eventFeedRoutes");
-const eventHistoryRoutes = require("./routes/eventHistoryRoutes");
-const eventContactsRoutes = require("./routes/eventContactsRoutes");
-const userRoutes = require("./routes/userRoutes");
 app.use("/signup", signupRoutes(db));
 app.use("/login", loginRoutes(db));
 app.use("/auth/google", authRoutes(db));
@@ -54,6 +57,9 @@ app.use("/events", eventFeedRoutes());
 app.use("/users", eventHistoryRoutes(db));
 app.use("/users", eventContactsRoutes(db));
 app.use("/users", userRoutes(db));
+
+// handles known route endpoints
+app.use(middleware.unknownEndpoint);
 
 app.listen(PORT, () => {
   console.log(`Successfully connected to ${PORT}`);
