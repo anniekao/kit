@@ -79,8 +79,8 @@ module.exports = db => {
     }
   });
 
-  // get /users/:id/calender
-  userRouter.get("/:id/calender", middleware.checkToken, async (req, res) => {
+  // get /users/:id/calendar
+  userRouter.get("/:id/calendar", middleware.checkToken, async (req, res) => {
     const userid = req.params.id;
     let result = [];
 
@@ -98,28 +98,28 @@ module.exports = db => {
     };
 
     try {
-      const userCalenderEvents = await db.query(
+      const userCalendarEvents = await db.query(
         `select ne.id, name, location, date, start_time, end_time from network_event ne 
           join user_event ue 
           on ne.id = ue.network_event_id 
           where ue.user_id = $1`,
         [userid]
       );
-      if (userCalenderEvents.rowsCount === 0) {
+      if (userCalendarEvents.rowsCount === 0) {
         throw new Error("User has not yet attented any events");
       }
 
-      result = userCalenderEvents.rows.map(eventObj => {
+      result = userCalendarEvents.rows.map(eventObj => {
         let obj = {};
         obj.id = eventObj.id;
         obj.title = eventObj.name;
         // obj.start = convertDate(eventObj.date, eventObj.start_time);
         obj.start = convertDate(eventObj.date, eventObj.start_time).toString();
         obj.end = convertDate(eventObj.date, eventObj.end_time).toString();
-
+        console.log(obj)
         return obj;
       });
-      console.log("=========events object==========", result)
+
       res.status(200).send(result);
     } catch (exception) {
       console.error(exception);
