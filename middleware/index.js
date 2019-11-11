@@ -20,7 +20,7 @@ const checkToken = (req, res, next) => {
   if (token) {
     jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
       if (err) {
-        return res.json({
+        return res.status(401).json({
           success: false,
           message: 'Invalid token'
         })
@@ -30,7 +30,7 @@ const checkToken = (req, res, next) => {
       }
     })
   } else {
-    return res.json({
+    return res.status(401).json({
       success: false,
       message: 'No token provided'
     })
