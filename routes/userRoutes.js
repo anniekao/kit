@@ -1,10 +1,11 @@
 const userRouter = require("express").Router();
 const moment = require("moment");
+const middleware = require("../middleware/");
 
 // const moment = require('moment')
 module.exports = db => {
   // GET /users
-  userRouter.get("/", async (req, res) => {
+  userRouter.get("/", middleware.checkToken, async (req, res) => {
     // select all columns in users table except for password
     const users = await db.query(`
       SELECT first_name, last_name, email, phone, occupation, bio, qr_code, company, id FROM users;
@@ -15,7 +16,7 @@ module.exports = db => {
   // POST /users : Is this necessary because user is already created in sign up route ?
 
   // GET /users/:id
-  userRouter.get("/:id", async (req, res) => {
+  userRouter.get("/:id", middleware.checkToken, async (req, res) => {
     try {
       // select all columns in users table except for password
       const user = await db.query(
@@ -36,7 +37,7 @@ module.exports = db => {
   });
 
   // PUT /users/:id
-  userRouter.put("/:id", async (req, res) => {
+  userRouter.put("/:id", middleware.checkToken, async (req, res) => {
     // create arrays with all elements except for id key and value
     const fields = Object.keys(req.body);
     const queryParams = Object.values(req.body);
@@ -69,7 +70,7 @@ module.exports = db => {
   });
 
   // DELETE /users/:id
-  userRouter.delete("/:id", async (req, res) => {
+  userRouter.delete("/:id", middleware.checkToken, async (req, res) => {
     try {
       await db.query(`DELETE FROM users WHERE id = $1;`, [req.params.id]);
       res.status(204).json({ message: `user ${req.params.id} deleted` });
@@ -79,7 +80,7 @@ module.exports = db => {
   });
 
   // get /users/:id/calender
-  userRouter.get("/:id/calender", async (req, res) => {
+  userRouter.get("/:id/calender", middleware.checkToken, async (req, res) => {
     const userid = req.params.id;
     let result = [];
 
@@ -116,8 +117,6 @@ module.exports = db => {
         obj.start = convertDate(eventObj.date, eventObj.start_time).toString();
         obj.end = convertDate(eventObj.date, eventObj.end_time).toString();
 
-        console.log(obj);
-
         return obj;
       });
 
@@ -129,7 +128,7 @@ module.exports = db => {
   });
 
   // POST users/:id/contact
-  userRouter.post("/:userId/contacts/:contactId", async (req, res) => {
+  userRouter.post("/:userId/contacts/:contactId", middleware.checkToken, async (req, res) => {
     const contactId = req.params.contactId;
     const userId = req.params.userId;
     const calDistance = (lat1, lon1, lat2, lon2) => {
@@ -168,7 +167,6 @@ module.exports = db => {
       }
 
       let closestEvents = events.rows.map(event => {
-        console.log(event);
         const tempEvent = {
           ...event,
           distance: calDistance(lat, long, event.lat, event.long)
@@ -177,8 +175,6 @@ module.exports = db => {
       });
 
       closestEvents.sort((x, y) => x.distance - y.distance);
-
-      console.log(closestEvents);
 
       let found = await db.query(
         `select * from contact where user_event_id = $1 and user_id = $2`,
@@ -198,7 +194,6 @@ module.exports = db => {
         throw new Error(`Create Contact failed`);
       }
 
-      console.log(contact.rows[0])
       res.status(200).json(contact.rows[0]);
     } catch (exception) {
       console.log(exception);
