@@ -1,7 +1,8 @@
 const router = require('express').Router();
+const middleware = require('../middleware/index')
 
 module.exports = db => {
-  router.get('/:id/history', async (req, res) => {
+  router.get('/:id/history', middleware.checkToken, async (req, res) => {
     try {
       const eventHistory = await db.query(
         `
