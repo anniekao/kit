@@ -13,7 +13,6 @@ module.exports = db => {
         if (user.rowCount !== 1) {
           throw new Error("Incorrect email or password");
         }
-        console.log(JSON.stringify(user));
         const hash = user.rows[0].password;
         if (bcrypt.compareSync(password, hash)) {
           const token = jwt.sign(

@@ -9,7 +9,6 @@ module.exports = () => {
   );
 
   router.get("/callback", function(req, res) {
-    console.log("GOOGLE CALLBACK");
     passport.authenticate("google", function(err, profile) {
       if (err) {
         res.redirect("http://localhost:3000/login");
