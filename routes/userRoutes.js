@@ -119,7 +119,7 @@ module.exports = db => {
 
         return obj;
       });
-
+      console.log("=========events object==========", result)
       res.status(200).send(result);
     } catch (exception) {
       console.error(exception);
