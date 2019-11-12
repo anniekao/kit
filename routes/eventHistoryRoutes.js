@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const moment = require('moment');
 const middleware = require('../middleware/index')
 
 module.exports = db => {
@@ -9,9 +10,9 @@ module.exports = db => {
         SELECT network_event.id, name, location, date, start_time, end_time 
         FROM network_event
         JOIN user_event ON network_event_id = network_event.id
-        WHERE user_id = $1 
+        WHERE user_id = $1 AND date <= $2
       `,
-        [req.params.id]
+        [req.params.id, moment(new Date()).format("YYYY-MM-DD")]
       );
 
       if (eventHistory) {
