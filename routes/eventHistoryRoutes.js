@@ -15,7 +15,7 @@ module.exports = db => {
         [req.params.id, moment(new Date()).format('YYYY-MM-DD')]
       );
 
-      if (eventHistory) {
+      if (eventHistory.rowCount > 0) {
         res.status(200).json(eventHistory.rows);
       } else {
         res.status(404).json({ error: 'User not found' });

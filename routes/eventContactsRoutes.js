@@ -24,7 +24,7 @@ module.exports = db => {
         [req.params.userId, req.params.eventId]
       );
 
-      if (eventDetails && eventContacts) {
+      if (eventDetails.rowCount > 0 && eventContacts.rowCount > 0) {
         const data = {
           eventDetails: eventDetails.rows,
           eventContacts: eventContacts.rows
