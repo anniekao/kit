@@ -39,5 +39,28 @@ module.exports = db => {
     }
   });
 
+  router.get('/:userId/contacts', middleware.checkToken, async (req, res) => {
+    try {
+      const allContacts = await db.query(
+        `
+        SELECT users.id, first_name, last_name, email, phone, occupation, bio, company
+        FROM users
+        JOIN contact ON user_id = users.id
+        JOIN user_event ON user_event_id = user_event.id
+        WHERE (user_event.user_id = $1)
+      `,
+        [req.params.userId]
+      );
+
+      if (allContacts.rowCount > 0) {
+        res.status(200).json(allContacts.rows);
+      } else {
+        res.status(404).json({ error: 'User not found' });
+      }
+    } catch (exception) {
+      console.error(exception);
+    }
+  });
+
   return router;
 };
