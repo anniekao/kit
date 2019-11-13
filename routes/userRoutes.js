@@ -217,7 +217,7 @@ module.exports = db => {
   );
 
   // POST users/:id/events TO ADD EVENT TO CALENDAR
-  userRouter.post('/:id/events', async (req, res) => {
+  userRouter.post('/:id/events', middleware.checkToken, async (req, res) => {
     const { name, location, date, start_time, end_time, lat, long } = req.body;
 
     try {
